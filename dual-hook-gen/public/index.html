@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Hook Gen - Create 24/7 Webhook Endpoints</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-size: 1.4em;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: bold;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .url-preview {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+            font-family: monospace;
+            font-size: 16px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 40px 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .feature h3 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .feature p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .result {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 40px;
+            margin-top: 40px;
+            border: 3px solid #28a745;
+        }
+
+        .success-check {
+            color: #28a745;
+            font-size: 4em;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .webhook-urls {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border: 2px dashed #667eea;
+        }
+
+        .url-item {
+            margin: 20px 0;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .url-item h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .url-code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin: 15px 0;
+            line-height: 1.5;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .examples {
+            background: rgba(255,255,255,0.9);
+            padding: 40px;
+            border-radius: 15px;
+            margin-top: 50px;
+        }
+
+        .examples h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .example-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .example-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .example-card h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>DUAL HOOK GEN</h1>
+            <p>Create Your Own 24/7 Webhook Endpoints Instantly</p>
+            <p>Multiple Users • Custom Directories • Always Online</p>
+        </div>
+
+        <div class="main-card">
+            <h2 style="text-align: center; margin-bottom: 40px; color: #333; font-size: 2.2em;">
+                🚀 Create Your Dual Hook Generator
+            </h2>
+
+            <form id="createForm">
+                <div class="form-group">
+                    <label for="directoryName">📁 Your Directory Name</label>
+                    <input type="text" id="directoryName" 
+                           placeholder="my-webhook-service" 
+                           required
+                           pattern="[a-zA-Z0-9-_]+"
+                           title="Only letters, numbers, hyphens, and underscores allowed">
+                    <div class="url-preview">
+                        <strong>Your URL will be:</strong><br>
+                        <span id="urlPreview">https://your-app.vercel.app/</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="title">🎯 Title for Your Generator</label>
+                    <input type="text" id="title" 
+                           placeholder="My Awesome Webhook Service" 
+                           value="My Dual Hook Generator">
+                </div>
+
+                <div class="form-group">
+                    <label for="webhookUrl">🔗 Your Webhook URL (Optional)</label>
+                    <input type="url" id="webhookUrl" 
+                           placeholder="https://your-discord-webhook.com or https://your-server.com/api">
+                    <small style="color: #666;">We'll forward all received webhooks to this URL</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">📝 Description (Optional)</label>
+                    <input type="text" id="description" 
+                           placeholder="Describe what your webhook service does">
+                </div>
+
+                <button type="submit" class="btn">
+                    🎉 CREATE MY DUAL HOOK GENERATOR
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="font-size: 1.2em; color: #667eea;">Creating your 24/7 webhook service...</p>
+            </div>
+
+            <div class="result" id="result">
+                <div class="success-check">✅</div>
+                <h2 style="text-align: center; color: #28a745; margin-bottom: 30px;">
+                    Your Dual Hook Generator is Live! 🎉
+                </h2>
+
+                <div class="webhook-urls">
+                    <h3 style="text-align: center; margin-bottom: 25px; color: #333;">
+                        🌐 Your 24/7 Webhook Endpoints
+                    </h3>
+                    
+                    <div id="generatedUrls"></div>
+                </div>
+
+                <div class="url-code" id="usageExamples"></div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="copy-btn" onclick="copyAllUrls()">📋 Copy All URLs</button>
+                    <button class="copy-btn" onclick="visitDashboard()">🚀 Visit Your Dashboard</button>
+                    <button class="copy-btn" onclick="testAllEndpoints()">🧪 Test All Endpoints</button>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px; padding: 20px; background: #e8f5e8; border-radius: 10px;">
+                    <p><strong>📍 Your Dashboard:</strong> <span id="dashboardUrl"></span></p>
+                    <p><em>Bookmark this page! Your webhooks will remain active 24/7</em></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🌐</div>
+                <h3>24/7 Uptime</h3>
+                <p>Always online on Vercel global network</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>Instant Setup</h3>
+                <p>Get your endpoints in seconds</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <h3>HTTPS Secure</h3>
+                <p>All endpoints are SSL encrypted</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3>Live Analytics</h3>
+                <p>Real-time request monitoring</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔄</div>
+                <h3>Dual Endpoints</h3>
+                <p>Two webhook URLs + API endpoint</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <h3>Custom Domain</h3>
+                <p>Your own directory on our domain</p>
+            </div>
+        </div>
+
+        <div class="examples">
+            <h2>💡 Use Cases</h2>
+            <div class="example-grid">
+                <div class="example-card">
+                    <h4>🤖 Discord Bot</h4>
+                    <p>Receive webhooks and forward to Discord</p>
+                </div>
+                <div class="example-card">
+                    <h4>📱 Mobile Apps</h4>
+                    <p>Endpoint for your app's backend calls</p>
+                </div>
+                <div class="example-card">
+                    <h4>🛠️ API Testing</h4>
+                    <p>Test webhook integrations locally</p>
+                </div>
+                <div class="example-card">
+                    <h4>📊 Monitoring</h4>
+                    <p>Monitor services with webhook alerts</p>
+                </div>
+                <div class="example-card">
+                    <h4>🔗 Zapier/Make</h4>
+                    <p>Custom endpoints for automation</p>
+                </div>
+                <div class="example-card">
+                    <h4>🎮 Game Servers</h4>
+                    <p>Receive game event notifications</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentResult = null;
+
+        // Update URL preview
+        document.getElementById('directoryName').addEventListener('input', function() {
+            const dir = this.value.trim();
+            const preview = document.getElementById('urlPreview');
+            const currentDomain = window.location.hostname;
+            if (dir) {
+                preview.textContent = `https://${currentDomain}/${dir}`;
+            } else {
+                preview.textContent = `https://${currentDomain}/`;
+            }
+        });
+
+        // Form submission
+        document.getElementById('createForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                directoryName: document.getElementById('directoryName').value.trim(),
+                title: document.getElementById('title').value.trim(),
+                webhookUrl: document.getElementById('webhookUrl').value.trim() || undefined,
+                description: document.getElementById('description').value.trim() || undefined
+            };
+
+            await createDirectory(formData);
+        });
+
+        async function createDirectory(data) {
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/create-directory', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const resultData = await response.json();
+                
+                if (resultData.success) {
+                    currentResult = resultData.data;
+                    displayResult(resultData);
+                } else {
+                    alert('Error: ' + resultData.message);
+                }
+            } catch (error) {
+                alert('Error creating directory: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function displayResult(resultData) {
+            const result = document.getElementById('result');
+            const generatedUrls = document.getElementById('generatedUrls');
+            const usageExamples = document.getElementById('usageExamples');
+            const dashboardUrl = document.getElementById('dashboardUrl');
+
+            const urls = resultData.data.urls;
+
+            // Display URLs
+            generatedUrls.innerHTML = `
+                <div class="url-item">
+                    <h4>🏠 Your Dashboard</h4>
+                    <div class="webhook-url">${urls.homepage}</div>
+                    <button class="copy-btn" onclick="copyUrl('${urls.homepage}')">Copy</button>
+                </div>
+                <div class="url-item">
+                    <h4>🔵 Webhook Endpoint 1</h4>
+                    <div class="webhook-url">${urls.webhook1}</div>
+                    <button class="copy-btn" onclick="copyUrl('${urls.webhook1}')">Copy</button>
+                </div>
+                <div class="url-item">
+                    <h4>🟢 Webhook Endpoint 2</h4>
+                    <div class="webhook-url">${urls.webhook2}</div>
+                    <button class="copy-btn" onclick="copyUrl('${urls.webhook2}')">Copy</button>
+                </div>
+                <div class="url-item">
+                    <h4>⚡ API Endpoint</h4>
+                    <div class="webhook-url">${urls.api}</div>
+                    <button class="copy-btn" onclick="copyUrl('${urls.api}')">Copy</button>
+                </div>
+            `;
+
+            // Display usage examples
+            usageExamples.textContent = `// Example: Send data to your webhooks
+
+// Webhook 1 - General purpose
+curl -X POST ${urls.webhook1} \\
+  -H "Content-Type: application/json" \\
+  -d '{"event": "user_signup", "data": {"user": "john_doe"}}'
+
+// Webhook 2 - Notifications
+curl -X POST ${urls.webhook2} \\
+  -H "Content-Type: application/json" \\
+  -d '{"alert": "high", "message": "Server load high"}'
+
+// API Endpoint - Any method
+curl -X GET ${urls.api}?action=status
+curl -X POST ${urls.api} -d '{"command": "restart"}'`;
+
+            dashboardUrl.textContent = urls.homepage;
+
+            result.style.display = 'block';
+            result.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('✅ URL copied to clipboard!');
+            });
+        }
+
+        function copyAllUrls() {
+            const urls = [
+                currentResult.urls.homepage,
+                currentResult.urls.webhook1,
+                currentResult.urls.webhook2,
+                currentResult.urls.api
+            ].join('\n');
+            
+            navigator.clipboard.writeText(urls).then(() => {
+                alert('✅ All URLs copied to clipboard!');
+            });
+        }
+
+        function visitDashboard() {
+            window.open(currentResult.urls.homepage, '_blank');
+        }
+
+        async function testAllEndpoints() {
+            const endpoints = [
+                { name: 'Webhook 1', url: currentResult.urls.webhook1 },
+                { name: 'Webhook 2', url: currentResult.urls.webhook2 },
+                { name: 'API', url: currentResult.urls.api }
+            ];
+
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint.url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            test: true,
+                            endpoint: endpoint.name,
+                            timestamp: new Date().toISOString(),
+                            message: 'Testing endpoint functionality'
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    console.log(`✅ ${endpoint.name}:`, result);
+                } catch (error) {
+                    console.error(`❌ ${endpoint.name}:`, error.message);
+                }
+            }
+            
+            alert('🧪 Test requests sent to all endpoints! Check console for results.');
+        }
+    </script>
+</body>
+</html>
