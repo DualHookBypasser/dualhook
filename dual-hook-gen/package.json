@@ -1,0 +1,19 @@
+{
+  "name": "dual-hook-gen",
+  "version": "1.0.0",
+  "description": "Dual Hook Generator - Create 24/7 Webhook Endpoints",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "axios": "^1.5.0"
+  },
+  "keywords": ["webhook", "vercel", "api", "automation"],
+  "author": "Your Name",
+  "license": "MIT"
+  }
